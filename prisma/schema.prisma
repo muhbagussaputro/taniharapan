@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -18,10 +12,10 @@ model User {
   name      String?
   email     String?  @unique
   password  String?
-  role      String   @default("user") // Nilai: "user", "admin", "rater"
-  ratings   Rating[]
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
+  role      String   @default("user")
+  ratings   Rating[]
 }
 
 model Product {
@@ -30,23 +24,22 @@ model Product {
   description String
   price       Int
   image       String
-  ratings     Rating[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now()) @updatedAt
+  ratings     Rating[]
 }
 
 model Rating {
-  id         String   @id @default(cuid())
-  userId     String
-  productId  String
-  value      Int
-  comment    String?
-  images     RatingImage[]
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @default(now()) @updatedAt
-
-  user       User     @relation(fields: [userId], references: [id])
-  product    Product  @relation(fields: [productId], references: [id])
+  id        String        @id @default(cuid())
+  userId    String
+  productId String
+  value     Int
+  comment   String?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @default(now()) @updatedAt
+  product   Product       @relation(fields: [productId], references: [id])
+  user      User          @relation(fields: [userId], references: [id])
+  images    RatingImage[]
 }
 
 model RatingImage {
@@ -55,6 +48,5 @@ model RatingImage {
   url       String
   public_id String
   createdAt DateTime @default(now())
-  
   rating    Rating   @relation(fields: [ratingId], references: [id], onDelete: Cascade)
 }

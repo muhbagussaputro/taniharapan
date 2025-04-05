@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma";
 
 export async function POST(request: Request) {
   try {
@@ -11,19 +9,19 @@ export async function POST(request: Request) {
 
     if (!name || !email || !password) {
       return NextResponse.json(
-        { message: "Nama, email, dan password diperlukan" },
+        { error: "Semua field harus diisi" },
         { status: 400 }
       );
     }
 
-    // Cek apakah email sudah digunakan
+    // Cek email sudah ada atau belum
     const existingUser = await prisma.user.findUnique({
       where: { email },
     });
 
     if (existingUser) {
       return NextResponse.json(
-        { message: "Email sudah terdaftar" },
+        { error: "Email sudah terdaftar" },
         { status: 400 }
       );
     }
@@ -37,6 +35,7 @@ export async function POST(request: Request) {
         name,
         email,
         password: hashedPassword,
+        role: "user", // Default role
       },
     });
 
@@ -44,17 +43,17 @@ export async function POST(request: Request) {
     const { password: _, ...userWithoutPassword } = user;
 
     return NextResponse.json(
-      { 
-        message: "Pendaftaran berhasil",
-        user: userWithoutPassword 
-      }, 
+      {
+        user: userWithoutPassword,
+        message: "Registrasi berhasil",
+      },
       { status: 201 }
     );
   } catch (error) {
     console.error("Registration error:", error);
     return NextResponse.json(
-      { message: "Terjadi kesalahan saat mendaftar" },
+      { error: "Terjadi kesalahan saat registrasi" },
       { status: 500 }
     );
   }
-} 
+}
