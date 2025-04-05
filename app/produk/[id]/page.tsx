@@ -20,6 +20,30 @@ interface Product {
   image: string;
 }
 
+// Tipe data rating
+interface RatingImage {
+  id: string;
+  url: string;
+  public_id: string;
+}
+
+interface RatingUser {
+  id: string;
+  name: string | null;
+  email: string | null;
+}
+
+interface Rating {
+  id: string;
+  value: number;
+  comment: string | null;
+  userId: string;
+  productId: string;
+  createdAt: string;
+  user?: RatingUser;
+  images: RatingImage[];
+}
+
 // Produk dummy (akan diganti dengan data dari database)
 const productsStatic: Product[] = [
   {
@@ -56,7 +80,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
   const router = useRouter();
   const { data: session, status } = useSession();
   const [product, setProduct] = useState<Product | null>(null);
-  const [ratings, setRatings] = useState([]);
+  const [ratings, setRatings] = useState<Rating[]>([]);
   const [loading, setLoading] = useState(true);
   const [ratingSubmitted, setRatingSubmitted] = useState(false);
   const [canRate, setCanRate] = useState(false);
@@ -140,6 +164,13 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
     }
   };
 
+  // Fungsi untuk menghitung rata-rata rating
+  const calculateAverageRating = (ratings: Rating[]): number => {
+    if (!ratings || ratings.length === 0) return 0;
+    const sum = ratings.reduce((acc, rating) => acc + rating.value, 0);
+    return sum / ratings.length;
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -220,7 +251,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
               <div className="mb-10">
                 <RatingDisplay 
                   ratings={ratings} 
-                  avgRating={ratings.reduce((acc, rating) => acc + rating.value, 0) / ratings.length} 
+                  avgRating={calculateAverageRating(ratings)} 
                   totalRatings={ratings.length} 
                 />
               </div>
