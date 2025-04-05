@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { generateSignature } from "@/utils/cloudinary";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../../auth/[...nextauth]/route";
+import { authOptions } from "../../auth/[...nextauth]/options";
 import { v2 as cloudinary } from 'cloudinary';
 
 export async function POST(request: Request) {
