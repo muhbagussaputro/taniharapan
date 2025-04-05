@@ -12,7 +12,7 @@ export async function GET(request: Request) {
     
     if (!session || !session.user) {
       return NextResponse.json(
-        { error: "Unauthorized" },
+        { error: "Tidak terautentikasi" },
         { status: 401 }
       );
     }
