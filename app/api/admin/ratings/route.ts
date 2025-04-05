@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/route";
 import { PrismaClient } from "@prisma/client";
@@ -6,7 +6,7 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 // GET /api/admin/ratings - Mendapatkan semua ratings untuk admin
-export async function GET(request: NextRequest) {
+export async function GET(request: Request) {
   try {
     // Cek autentikasi dan otorisasi admin
     const session = await getServerSession(authOptions);

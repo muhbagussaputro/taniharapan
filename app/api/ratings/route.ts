@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/route";
 import { PrismaClient } from "@prisma/client";
@@ -40,7 +40,7 @@ let mockRatings = [
 ];
 
 // GET /api/ratings - Mendapatkan ratings untuk produk tertentu
-export async function GET(request: NextRequest) {
+export async function GET(request: Request) {
   try {
     const url = new URL(request.url);
     const productId = url.searchParams.get("productId");
@@ -82,7 +82,7 @@ export async function GET(request: NextRequest) {
 }
 
 // POST /api/ratings - Menambahkan rating baru
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
   try {
     // Cek autentikasi
     const session = await getServerSession(authOptions);
