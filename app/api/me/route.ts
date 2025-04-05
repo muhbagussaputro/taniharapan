@@ -12,7 +12,7 @@ export async function GET(request: Request) {
     
     if (!session || !session.user) {
       return NextResponse.json(
-        { error: "Tidak terautentikasi" },
+        { error: "Unauthorized" },
         { status: 401 }
       );
     }
@@ -24,7 +24,6 @@ export async function GET(request: Request) {
         id: true,
         name: true,
         email: true,
-        image: true,
         role: true,
         createdAt: true,
         // Jangan tampilkan password atau data sensitif lainnya
