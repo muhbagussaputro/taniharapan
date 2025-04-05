@@ -37,18 +37,18 @@ async function checkAdminAuth() {
 }
 
 // GET /api/admin/ratings/[id] - Mendapatkan detail rating
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: Request) {
   try {
     const auth = await checkAdminAuth();
     if (!auth.isAuthorized) {
       return auth.response;
     }
 
+    // Extract ID from URL
+    const id = request.url.split('/').pop();
+
     const rating = await prisma.rating.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         user: {
           select: {
@@ -79,16 +79,15 @@ export async function GET(
 }
 
 // PUT /api/admin/ratings/[id] - Update rating
-export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: Request) {
   try {
     const auth = await checkAdminAuth();
     if (!auth.isAuthorized) {
       return auth.response;
     }
 
+    // Extract ID from URL
+    const id = request.url.split('/').pop();
     const { value, comment } = await request.json();
 
     // Validasi
@@ -101,7 +100,7 @@ export async function PUT(
 
     // Cek apakah rating ada
     const existingRating = await prisma.rating.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!existingRating) {
@@ -113,7 +112,7 @@ export async function PUT(
 
     // Update rating
     const updatedRating = await prisma.rating.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         value,
         comment,
@@ -134,19 +133,19 @@ export async function PUT(
 }
 
 // DELETE /api/admin/ratings/[id] - Hapus rating
-export async function DELETE(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: Request) {
   try {
     const auth = await checkAdminAuth();
     if (!auth.isAuthorized) {
       return auth.response;
     }
 
+    // Extract ID from URL
+    const id = request.url.split('/').pop();
+
     // Cek apakah rating ada
     const existingRating = await prisma.rating.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!existingRating) {
@@ -158,12 +157,12 @@ export async function DELETE(
 
     // Hapus gambar terkait terlebih dahulu (karena ada foreign key constraint)
     await prisma.ratingImage.deleteMany({
-      where: { ratingId: params.id },
+      where: { ratingId: id },
     });
 
     // Hapus rating
     await prisma.rating.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json({
