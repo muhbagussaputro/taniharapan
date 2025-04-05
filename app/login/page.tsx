@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import AuthLayout from "@/components/auth/AuthLayout";
 import { AnimatePresence, m } from "framer-motion";
 
-export default function Login() {
+// Komponen untuk menangani params
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const success = searchParams.get("success");
@@ -18,11 +19,11 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
 
   // Set success message if redirected from register page
-  useState(() => {
+  useEffect(() => {
     if (success === "account-created") {
       setSuccessMessage("Akun berhasil dibuat. Silakan masuk.");
     }
-  });
+  }, [success]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,12 +53,7 @@ export default function Login() {
   };
 
   return (
-    <AuthLayout
-      title="Masuk ke Akun Anda"
-      subtitle="Selamat datang kembali! Silakan masuk untuk mengakses akun Anda."
-      altLink="/register"
-      altText="Belum memiliki akun?"
-    >
+    <>
       <AnimatePresence mode="wait">
         {successMessage && (
           <m.div 
@@ -138,6 +134,22 @@ export default function Login() {
           </button>
         </div>
       </form>
+    </>
+  );
+}
+
+// Komponen utama dengan Suspense boundary
+export default function Login() {
+  return (
+    <AuthLayout
+      title="Masuk ke Akun Anda"
+      subtitle="Selamat datang kembali! Silakan masuk untuk mengakses akun Anda."
+      altLink="/register"
+      altText="Belum memiliki akun?"
+    >
+      <Suspense fallback={<div className="animate-pulse p-4 text-center">Loading...</div>}>
+        <LoginForm />
+      </Suspense>
     </AuthLayout>
   );
 } 
