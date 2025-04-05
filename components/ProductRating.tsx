@@ -180,7 +180,7 @@ export default function ProductRating({
               <svg
                 key={star}
                 className={`w-6 h-6 ${
-                  star <= userRating.value ? "text-yellow-400" : "text-gray-300"
+                  userRating && star <= userRating.value ? "text-yellow-400" : "text-gray-300"
                 }`}
                 fill="currentColor"
                 viewBox="0 0 20 20"
@@ -189,9 +189,9 @@ export default function ProductRating({
               </svg>
             ))}
           </div>
-          {userRating.comment && <p className="text-gray-700">{userRating.comment}</p>}
+          {userRating && userRating.comment && <p className="text-gray-700">{userRating.comment}</p>}
           <p className="text-sm text-gray-500 mt-2">
-            Dikirim pada {new Date(userRating.createdAt).toLocaleDateString("id-ID", {
+            Dikirim pada {userRating && new Date(userRating.createdAt).toLocaleDateString("id-ID", {
               year: "numeric",
               month: "long",
               day: "numeric",
