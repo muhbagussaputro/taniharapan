@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ShoppingBag } from "lucide-react";
@@ -54,7 +55,9 @@ const mockProduct = {
   averageRating: 4.5
 };
 
-export default function Page({ params }: { params: PageParams }) {
+export default function Page({ params }: { params: Promise<PageParams> }) {
+  // Gunakan React.use untuk mengakses params yang berupa Promise
+  const paramsData = React.use(params);
   const product = mockProduct;
   
   return (

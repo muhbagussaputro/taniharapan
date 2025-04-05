@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import React from "react";
 import Image from "next/image";
 import Header from "@/components/Header";
@@ -43,7 +43,7 @@ const productsStatic = [
   }
 ];
 
-export default function ProductDetailPage({ params }) {
+export default function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
   const { data: session, status } = useSession();
   const [product, setProduct] = useState(null);
@@ -51,13 +51,28 @@ export default function ProductDetailPage({ params }) {
   const [loading, setLoading] = useState(true);
   const [ratingSubmitted, setRatingSubmitted] = useState(false);
   const [canRate, setCanRate] = useState(false);
+  const [productId, setProductId] = useState<string | null>(null);
 
+  // Ekstrak ID produk dari params di fungsi terpisah
   useEffect(() => {
-    // Menggunakan React.use() untuk unwrap params
-    const paramsData = React.use(Promise.resolve(params));
-    if (!paramsData?.id) return;
+    const getProductId = async () => {
+      try {
+        const resolvedParams = await Promise.resolve(params);
+        if (resolvedParams?.id) {
+          setProductId(resolvedParams.id);
+        }
+      } catch (error) {
+        console.error("Error resolving params:", error);
+        router.push('/produk');
+      }
+    };
     
-    const productId = paramsData.id;
+    getProductId();
+  }, [params, router]);
+
+  // Fungsi untuk mengambil data produk dan rating
+  const fetchProductData = useCallback(async () => {
+    if (!productId) return;
     
     // Ambil data produk
     const foundProduct = productsStatic.find(p => p.id === productId);
@@ -65,20 +80,10 @@ export default function ProductDetailPage({ params }) {
       setProduct(foundProduct);
     } else {
       router.push('/produk');
+      return;
     }
     
     // Ambil ratings
-    fetchRatings(productId);
-    
-    // Cek peran user
-    if (status === "authenticated" && session?.user) {
-      checkUserRole();
-    }
-    
-    setLoading(false);
-  }, [params, router, status, session]);
-  
-  const fetchRatings = async (productId) => {
     try {
       const response = await fetch(`/api/ratings?productId=${productId}`);
       if (response.ok) {
@@ -88,25 +93,41 @@ export default function ProductDetailPage({ params }) {
     } catch (error) {
       console.error("Error fetching ratings:", error);
     }
-  };
+    
+    setLoading(false);
+  }, [productId, router]);
   
-  const checkUserRole = async () => {
-    try {
-      const response = await fetch('/api/me');
-      if (response.ok) {
-        const data = await response.json();
-        setCanRate(data.user?.role === "admin" || data.user?.role === "rater");
-      }
-    } catch (error) {
-      console.error("Error checking user role:", error);
+  // Load data ketika productId tersedia
+  useEffect(() => {
+    if (productId) {
+      fetchProductData();
     }
-  };
+  }, [productId, fetchProductData]);
+
+  // Cek peran user saat status autentikasi berubah
+  useEffect(() => {
+    const checkUserRole = async () => {
+      if (status === "authenticated" && session?.user) {
+        try {
+          const response = await fetch('/api/me');
+          if (response.ok) {
+            const data = await response.json();
+            setCanRate(data.user?.role === "admin" || data.user?.role === "rater");
+          }
+        } catch (error) {
+          console.error("Error checking user role:", error);
+        }
+      }
+    };
+    
+    checkUserRole();
+  }, [status, session]);
   
   const handleRatingSuccess = () => {
     setRatingSubmitted(true);
-    const paramsData = React.use(Promise.resolve(params));
-    if (paramsData?.id) {
-      fetchRatings(paramsData.id);
+    if (productId) {
+      // Perbarui rating setelah submit
+      fetchProductData();
     }
   };
 
@@ -202,20 +223,18 @@ export default function ProductDetailPage({ params }) {
                     <p className="text-emerald-700">Terima kasih atas ulasan Anda!</p>
                   </div>
                 ) : (
-                  <div className="border-t pt-8">
-                    <h3 className="text-xl font-semibold mb-4">Berikan Ulasan</h3>
-                    <RatingForm productId={params.id} onSuccess={handleRatingSuccess} />
-                  </div>
+                  <RatingForm 
+                    productId={productId} 
+                    onSuccess={handleRatingSuccess} 
+                  />
                 )
               ) : (
-                <div className="bg-yellow-50 p-4 rounded-lg">
-                  <p className="text-yellow-700">Anda tidak memiliki izin untuk memberikan ulasan. Hanya admin dan pengguna dengan peran 'rater' yang dapat memberikan ulasan.</p>
-                </div>
+                <p className="text-gray-500">Anda tidak memiliki izin untuk memberikan rating.</p>
               )
             ) : (
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <p className="text-gray-700">Anda harus <a href="/login" className="text-emerald-600 font-semibold">login</a> untuk memberikan ulasan</p>
-              </div>
+              <p className="text-gray-500">
+                Silakan <a href="/login" className="text-emerald-600 hover:underline">login</a> untuk memberikan ulasan.
+              </p>
             )}
           </div>
         </div>
