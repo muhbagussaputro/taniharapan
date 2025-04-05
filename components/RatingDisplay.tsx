@@ -30,11 +30,11 @@ interface Rating {
 
 interface RatingDisplayProps {
   ratings: Rating[];
-  avgRating: number;
-  totalRatings: number;
+  avgRating?: number;
+  totalRatings?: number;
 }
 
-export default function RatingDisplay({ ratings, avgRating, totalRatings }: RatingDisplayProps) {
+export default function RatingDisplay({ ratings, avgRating = 0, totalRatings = 0 }: RatingDisplayProps) {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentImage, setCurrentImage] = useState("");
 

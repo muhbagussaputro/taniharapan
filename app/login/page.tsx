@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState, Suspense } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import AuthLayout from "@/components/auth/AuthLayout";
 import { AnimatePresence, m } from "framer-motion";
 
-export default function Login() {
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const success = searchParams.get("success");
@@ -139,5 +139,26 @@ export default function Login() {
         </div>
       </form>
     </AuthLayout>
+  );
+}
+
+export default function Login() {
+  return (
+    <Suspense fallback={
+      <AuthLayout 
+        title="Masuk ke Akun Anda"
+        subtitle="Selamat datang kembali! Silakan masuk untuk mengakses akun Anda."
+        altLink="/register"
+        altText="Belum memiliki akun?"
+      >
+        <div className="animate-pulse space-y-6">
+          <div className="h-10 bg-gray-200 rounded"></div>
+          <div className="h-10 bg-gray-200 rounded"></div>
+          <div className="h-10 bg-primary-200 rounded mt-4"></div>
+        </div>
+      </AuthLayout>
+    }>
+      <LoginForm />
+    </Suspense>
   );
 } 

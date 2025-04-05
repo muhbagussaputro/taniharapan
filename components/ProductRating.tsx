@@ -173,14 +173,14 @@ export default function ProductRating({
           </Link>
         </div>
       ) : (
-        <div className="mb-8 bg-gray-50 p-4 rounded-lg">
+        <div className="bg-primary-50 p-4 rounded-lg mb-8">
           <h3 className="text-lg font-semibold mb-2">Ulasan Anda</h3>
           <div className="flex mb-2">
             {[1, 2, 3, 4, 5].map((star) => (
               <svg
                 key={star}
                 className={`w-6 h-6 ${
-                  star <= userRating.value ? "text-yellow-400" : "text-gray-300"
+                  star <= (userRating?.value || 0) ? "text-yellow-400" : "text-gray-300"
                 }`}
                 fill="currentColor"
                 viewBox="0 0 20 20"
@@ -189,14 +189,16 @@ export default function ProductRating({
               </svg>
             ))}
           </div>
-          {userRating.comment && <p className="text-gray-700">{userRating.comment}</p>}
-          <p className="text-sm text-gray-500 mt-2">
-            Dikirim pada {new Date(userRating.createdAt).toLocaleDateString("id-ID", {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })}
-          </p>
+          {userRating?.comment && <p className="text-gray-700">{userRating.comment}</p>}
+          {userRating?.createdAt && (
+            <p className="text-sm text-gray-500 mt-2">
+              Dikirim pada {new Date(userRating.createdAt).toLocaleDateString("id-ID", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </p>
+          )}
         </div>
       )}
 
