@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import AdminHeader from '../components/AdminHeader';
-import Footer from '../components/Footer';
+import Footer from '../../components/Footer';
 import Link from 'next/link';
 import { ClipboardList, Users, ShoppingBag } from 'lucide-react';
 
