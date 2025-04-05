@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import React from "react";
 import Image from "next/image";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -52,9 +53,11 @@ export default function ProductDetailPage({ params }) {
   const [canRate, setCanRate] = useState(false);
 
   useEffect(() => {
-    if (!params?.id) return;
+    // Menggunakan React.use() untuk unwrap params
+    const paramsData = React.use(Promise.resolve(params));
+    if (!paramsData?.id) return;
     
-    const productId = params.id;
+    const productId = paramsData.id;
     
     // Ambil data produk
     const foundProduct = productsStatic.find(p => p.id === productId);
@@ -101,8 +104,9 @@ export default function ProductDetailPage({ params }) {
   
   const handleRatingSuccess = () => {
     setRatingSubmitted(true);
-    if (params?.id) {
-      fetchRatings(params.id);
+    const paramsData = React.use(Promise.resolve(params));
+    if (paramsData?.id) {
+      fetchRatings(paramsData.id);
     }
   };
 

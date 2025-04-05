@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['res.cloudinary.com', 'images.unsplash.com', 'dummyimage.com'],
+    domains: ['res.cloudinary.com', 'images.unsplash.com', 'dummyimage.com', 'via.placeholder.com'],
     formats: ['image/avif', 'image/webp'],
     remotePatterns: [
       {
@@ -18,6 +18,11 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'dummyimage.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'via.placeholder.com',
         pathname: '/**',
       },
     ],
