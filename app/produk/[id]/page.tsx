@@ -218,7 +218,11 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
             {/* Display Ratings */}
             {ratings && ratings.length > 0 ? (
               <div className="mb-10">
-                <RatingDisplay ratings={ratings} />
+                <RatingDisplay 
+                  ratings={ratings} 
+                  avgRating={ratings.reduce((acc, rating) => acc + rating.value, 0) / ratings.length} 
+                  totalRatings={ratings.length} 
+                />
               </div>
             ) : (
               <p className="text-gray-500 mb-8">Belum ada ulasan untuk produk ini.</p>
