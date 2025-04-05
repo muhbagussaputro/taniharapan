@@ -11,8 +11,17 @@ import CloudinaryImage from "@/components/CloudinaryImage";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
+// Tipe data produk
+interface Product {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  image: string;
+}
+
 // Produk dummy (akan diganti dengan data dari database)
-const productsStatic = [
+const productsStatic: Product[] = [
   {
     id: "1",
     name: "BioPlantz Nutrisi Tanaman",
@@ -46,7 +55,7 @@ const productsStatic = [
 export default function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
   const { data: session, status } = useSession();
-  const [product, setProduct] = useState(null);
+  const [product, setProduct] = useState<Product | null>(null);
   const [ratings, setRatings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [ratingSubmitted, setRatingSubmitted] = useState(false);
