@@ -268,7 +268,8 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                   </div>
                 ) : (
                   <RatingForm 
-                    productId={productId} 
+                    productId={productId || ''} 
+                    productName={product.name}
                     onSuccess={handleRatingSuccess} 
                   />
                 )
