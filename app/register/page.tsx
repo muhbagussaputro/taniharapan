@@ -41,7 +41,14 @@ function RegisterForm() {
     setIsLoading(true);
     
     try {
-      const response = await fetch("/api/register", {
+      // Setup API URL
+      const apiUrl = process.env.NODE_ENV === 'production' 
+        ? 'https://www.taniharapan.my.id/api/register'
+        : '/api/register';
+      
+      console.log('Mengirim request ke:', apiUrl);
+      
+      const response = await fetch(apiUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -53,7 +60,17 @@ function RegisterForm() {
         }),
       });
       
-      const data = await response.json();
+      // Debug response
+      console.log('Status response:', response.status);
+      
+      let data;
+      try {
+        data = await response.json();
+        console.log('Response data:', data);
+      } catch (jsonError) {
+        console.error('Error parsing JSON response:', jsonError);
+        throw new Error('Gagal memproses response dari server');
+      }
       
       if (!response.ok) {
         throw new Error(data.error || "Terjadi kesalahan saat pendaftaran");
@@ -62,6 +79,7 @@ function RegisterForm() {
       // Redirect to login page with success message
       router.push("/login?success=account-created");
     } catch (error: any) {
+      console.error('Registration error client side:', error);
       setFormError(error.message || "Terjadi kesalahan saat pendaftaran");
       setIsLoading(false);
     }

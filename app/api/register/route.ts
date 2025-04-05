@@ -50,9 +50,22 @@ export async function POST(request: Request) {
       { status: 201 }
     );
   } catch (error) {
-    console.error("Registration error:", error);
+    console.error("Registration error detail:", error);
+    
+    // Lebih detail error untuk debugging
+    let errorMessage = "Terjadi kesalahan saat registrasi";
+    if (error instanceof Error) {
+      errorMessage = `${errorMessage}: ${error.message}`;
+      console.error("Error name:", error.name);
+      console.error("Error stack:", error.stack);
+    }
+    
+    // Log environment untuk debugging
+    console.log("DATABASE_URL exists:", !!process.env.DATABASE_URL);
+    console.log("NEXTAUTH_URL:", process.env.NEXTAUTH_URL);
+    
     return NextResponse.json(
-      { error: "Terjadi kesalahan saat registrasi" },
+      { error: errorMessage },
       { status: 500 }
     );
   }
